@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -13,7 +14,18 @@ import (
 )
 
 func main() {
+	setup := flag.Bool("setup", false, "Re-run configuration setup")
+	flag.Parse()
+	if *setup {
+		mainthread.Init(runSetup)
+		return
+	}
 	mainthread.Init(run)
+}
+
+func runSetup() {
+	cfg := &Config{Model: "gemini-flash-latest"}
+	showConfigSetup(cfg)
 }
 
 func run() {
@@ -91,7 +103,7 @@ func showConfigSetup(cfg *Config) {
 	fmt.Println("Create %APPDATA%\\prompt-enhancer\\config.toml with:")
 	fmt.Println()
 	fmt.Println(`  api_key = "your-gemini-api-key"`)
-	fmt.Println(`  model = "gemini-2.0-flash"`)
+	fmt.Println(`  model = "gemini-flash-latest"`)
 	fmt.Println()
 	fmt.Println("Get a Gemini API key at: https://aistudio.google.com/app/apikey")
 	fmt.Println()

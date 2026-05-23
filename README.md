@@ -32,7 +32,7 @@ go build -o prompt-enhancer.exe
 
 ```toml
 api_key = "your-gemini-api-key"
-model = "gemini-2.0-flash"
+model = "gemini-flash-latest"
 ```
 
 ## Usage
@@ -42,6 +42,8 @@ prompt-enhancer.exe
 ```
 
 The app runs in the foreground. Press `Ctrl+Alt+F12` to enhance clipboard contents. Press `Ctrl+C` to quit.
+
+To update your API key or model, run: `prompt-enhancer.exe --setup`
 
 ## Files
 
