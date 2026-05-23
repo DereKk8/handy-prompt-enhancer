@@ -47,7 +47,7 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 	if cfg.Model == "" {
-		cfg.Model = "gemini-2.0-flash"
+		cfg.Model = "gemini-flash-latest"
 	}
 	if cfg.APIKey == "" {
 		return nil, ErrNoAPIKey

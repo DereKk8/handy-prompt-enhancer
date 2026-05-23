@@ -41,8 +41,8 @@ type geminiCandidate struct {
 
 type geminiErrorResponse struct {
 	Error struct {
-		Code    int               `json:"code"`
-		Message string            `json:"message"`
+		Code    int                 `json:"code"`
+		Message string              `json:"message"`
 		Details []geminiErrorDetail `json:"details"`
 	} `json:"error"`
 }
@@ -71,7 +71,7 @@ const maxRetries = 5
 
 func (g *GeminiProvider) Enhance(raw string) (string, error) {
 	body := buildRequestBody(raw)
-	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s", g.Model, g.APIKey)
+	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent", g.Model)
 
 	for attempt := 0; attempt <= maxRetries; attempt++ {
 		result, retryAfter, err := g.tryEnhance(url, body)
@@ -89,14 +89,22 @@ func (g *GeminiProvider) Enhance(raw string) (string, error) {
 }
 
 func (g *GeminiProvider) tryEnhance(url string, body []byte) (string, time.Duration, error) {
-	resp, err := http.Post(url, "application/json", bytes.NewReader(body))
+	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
+	if err != nil {
+		return "", 0, fmt.Errorf("create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("x-goog-api-key", g.APIKey)
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", 0, fmt.Errorf("API call failed: %w", err)
 	}
 	defer resp.Body.Close()
 
+	rawBody, _ := io.ReadAll(resp.Body)
+
 	if resp.StatusCode != http.StatusOK {
-		rawBody, _ := io.ReadAll(resp.Body)
 		if resp.StatusCode == 429 {
 			delay := parseRetryDelay(rawBody)
 			return "", delay, fmt.Errorf("rate limited: %s", string(rawBody))
@@ -105,7 +113,7 @@ func (g *GeminiProvider) tryEnhance(url string, body []byte) (string, time.Durat
 	}
 
 	var geminiResp geminiResponse
-	if err := json.NewDecoder(resp.Body).Decode(&geminiResp); err != nil {
+	if err := json.Unmarshal(rawBody, &geminiResp); err != nil {
 		return "", 0, fmt.Errorf("decode response: %w", err)
 	}
 

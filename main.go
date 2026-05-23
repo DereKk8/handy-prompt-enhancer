@@ -20,7 +20,7 @@ func run() {
 	cfg, err := LoadConfig()
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) || errors.Is(err, ErrNoAPIKey) {
-			cfg = &Config{Model: "gemini-2.0-flash"}
+			cfg = &Config{Model: "gemini-flash-latest"}
 			showConfigSetup(cfg)
 			return
 		}
@@ -103,7 +103,7 @@ func showConfigSetup(cfg *Config) {
 		log.Fatal("API key required")
 	}
 	cfg.APIKey = key
-	cfg.Model = "gemini-2.0-flash"
+	cfg.Model = "gemini-flash-latest"
 
 	if err := WriteConfig(cfg); err != nil {
 		log.Fatalf("Failed to save config: %v", err)
