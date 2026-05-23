@@ -24,26 +24,59 @@ GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o prompt-enhancer.exe
 go build -o prompt-enhancer.exe
 ```
 
-## Setup
+## Install (Windows)
 
-1. Get a Gemini API key: https://aistudio.google.com/app/apikey
-2. Run `prompt-enhancer.exe` once — it will prompt for your API key and create the config file
-3. Or manually create `%APPDATA%\prompt-enhancer\config.toml`:
+Copies the exe to `%USERPROFILE%\tools\prompt-enhancer\` and adds it to your user PATH so you can run `prompt-enhancer` from any terminal.
 
-```toml
-api_key = "your-gemini-api-key"
-model = "gemini-flash-latest"
+```powershell
+# Run from the directory containing prompt-enhancer.exe
+.\install.ps1
+
+# Restart your terminal afterwards
 ```
 
 ## Usage
 
-```bash
+### Foreground (for testing)
+
+```powershell
 prompt-enhancer.exe
 ```
 
-The app runs in the foreground. Press `Ctrl+Alt+F12` to enhance clipboard contents. Press `Ctrl+C` to quit.
+Press `Ctrl+Alt+F12` to enhance clipboard contents. Press `Ctrl+C` to quit.
 
-To update your API key or model, run: `prompt-enhancer.exe --setup`
+### Background (for daily use)
+
+```powershell
+.\run-bg.ps1
+```
+
+This launches `prompt-enhancer.exe` in a hidden window. The hotkey still works. To stop it:
+
+```powershell
+Stop-Process -Name prompt-enhancer
+```
+
+### On startup (optional)
+
+Place `run-bg.ps1` or a shortcut in `shell:startup` to auto-launch on login.
+
+### Update API key
+
+```powershell
+prompt-enhancer.exe --setup
+```
+
+## API Key
+
+1. Get a Gemini API key: https://aistudio.google.com/app/apikey
+2. Run once — it will prompt for your key and save to `%APPDATA%\prompt-enhancer\config.toml`
+
+```toml
+# %APPDATA%\prompt-enhancer\config.toml
+api_key = "your-gemini-api-key"
+model = "gemini-flash-latest"
+```
 
 ## Files
 
@@ -53,13 +86,8 @@ To update your API key or model, run: `prompt-enhancer.exe --setup`
 | `llm.go` | LLM provider interface + Gemini |
 | `config.go` | Config loading from `%APPDATA%` |
 | `notify.go` | Windows toast notification |
-
-## Dependencies
-
-- [golang.design/x/hotkey](https://golang.design/x/hotkey) — global hotkey
-- [github.com/atotto/clipboard](https://github.com/atotto/clipboard) — clipboard
-- [github.com/BurntSushi/toml](https://github.com/BurntSushi/toml) — TOML parsing
-- [golang.org/x/sys](https://golang.org/x/sys) — Windows API calls
+| `install.ps1` | Adds exe to PATH and copies to tools dir |
+| `run-bg.ps1` | Launches exe in background (hidden window) |
 
 ## Troubleshooting
 
@@ -67,7 +95,7 @@ To update your API key or model, run: `prompt-enhancer.exe --setup`
 The app uses PowerShell to show toasts. If they don't appear, the app still logs to its terminal output.
 
 ### Clipboard issues
-Make sure the target text is already copied before pressing `Ctrl+Alt+P`. The app reads whatever is currently on the clipboard.
+Make sure the target text is already copied before pressing `Ctrl+Alt+F12`. The app reads whatever is currently on the clipboard.
 
 ### Hotkey conflicts
 If `Ctrl+Alt+F12` is used by another app, you can change the hotkey by editing `main.go` and recompiling.
