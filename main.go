@@ -58,7 +58,7 @@ func handleEnhance(provider LLMProvider, notifier Notifier) {
 	raw, err := clipboard.ReadAll()
 	if err != nil {
 		log.Printf("Clipboard read failed: %v", err)
-		notifier.Notify("Prompt Enhancer", fmt.Sprintf("Clipboard read failed: %v", err))
+		notifier.Notify("Prompt Enhancer", "Clipboard read failed — see terminal for details")
 		return
 	}
 	if raw == "" {
@@ -70,13 +70,13 @@ func handleEnhance(provider LLMProvider, notifier Notifier) {
 	enhanced, err := provider.Enhance(raw)
 	if err != nil {
 		log.Printf("Enhancement failed: %v", err)
-		notifier.Notify("Prompt Enhancer", fmt.Sprintf("Enhancement failed: %v", err))
+		notifier.Notify("Prompt Enhancer", "Enhancement failed — see terminal for details")
 		return
 	}
 
 	if err := clipboard.WriteAll(enhanced); err != nil {
 		log.Printf("Clipboard write failed: %v", err)
-		notifier.Notify("Prompt Enhancer", fmt.Sprintf("Clipboard write failed: %v", err))
+		notifier.Notify("Prompt Enhancer", "Clipboard write failed — see terminal for details")
 		return
 	}
 
