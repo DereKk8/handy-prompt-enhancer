@@ -12,56 +12,32 @@ Takes raw speech-to-text (from [Handy](https://github.com/cjpais/Handy) or any s
 
 ## Build
 
-### From WSL2 / Linux (cross-compile for Windows)
-
 ```bash
-GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o prompt-enhancer.exe
+GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o prompt-enhancer.exe .
 ```
 
-### Native on Windows
+## First Run
 
-```bash
-go build -o prompt-enhancer.exe
-```
+Just run `prompt-enhancer.exe` — it launches an interactive setup wizard that asks:
 
-## Install (Windows)
-
-Copies the exe to `%USERPROFILE%\tools\prompt-enhancer\` and adds it to your user PATH so you can run `prompt-enhancer` from any terminal.
-
-```powershell
-# Run from the directory containing prompt-enhancer.exe
-.\install.ps1
-
-# Restart your terminal afterwards
-```
+- Your Gemini API key
+- Install directory (default: `%USERPROFILE%\tools\prompt-enhancer`)
+- Whether to add to system PATH (run from any terminal)
+- Whether to launch on Windows startup (background)
+- Whether to launch now in the background
 
 ## Usage
 
-### Foreground (for testing)
-
 ```powershell
+# Normal (foreground terminal)
 prompt-enhancer.exe
+
+# Or if launched in background, hotkey still works silently
 ```
 
-Press `Ctrl+Alt+F12` to enhance clipboard contents. Press `Ctrl+C` to quit.
+Press `Ctrl+Alt+F12` to enhance clipboard contents. Press `Ctrl+C` to quit (foreground mode).
 
-### Background (for daily use)
-
-```powershell
-.\run-bg.ps1
-```
-
-This launches `prompt-enhancer.exe` in a hidden window. The hotkey still works. To stop it:
-
-```powershell
-Stop-Process -Name prompt-enhancer
-```
-
-### On startup (optional)
-
-Place `run-bg.ps1` or a shortcut in `shell:startup` to auto-launch on login.
-
-### Update API key
+### Re-run setup
 
 ```powershell
 prompt-enhancer.exe --setup
@@ -69,12 +45,12 @@ prompt-enhancer.exe --setup
 
 ## API Key
 
-1. Get a Gemini API key: https://aistudio.google.com/app/apikey
-2. Run once — it will prompt for your key and save to `%APPDATA%\prompt-enhancer\config.toml`
+Get one at https://aistudio.google.com/app/apikey
+
+Config saved to `%APPDATA%\prompt-enhancer\config.toml`:
 
 ```toml
-# %APPDATA%\prompt-enhancer\config.toml
-api_key = "your-gemini-api-key"
+api_key = "your-key"
 model = "gemini-flash-latest"
 ```
 
@@ -83,11 +59,10 @@ model = "gemini-flash-latest"
 | File | Purpose |
 |---|---|
 | `main.go` | Hotkey loop, clipboard, orchestration |
-| `llm.go` | LLM provider interface + Gemini |
-| `config.go` | Config loading from `%APPDATA%` |
+| `llm.go` | Gemini provider |
+| `config.go` | Config loading/saving |
 | `notify.go` | Windows toast notification |
-| `install.ps1` | Adds exe to PATH and copies to tools dir |
-| `run-bg.ps1` | Launches exe in background (hidden window) |
+| `wizard.go` | Setup wizard (PATH, startup, launch) |
 
 ## Troubleshooting
 
@@ -95,7 +70,7 @@ model = "gemini-flash-latest"
 The app uses PowerShell to show toasts. If they don't appear, the app still logs to its terminal output.
 
 ### Clipboard issues
-Make sure the target text is already copied before pressing `Ctrl+Alt+F12`. The app reads whatever is currently on the clipboard.
+Make sure the target text is already copied before pressing `Ctrl+Alt+F12`.
 
 ### Hotkey conflicts
-If `Ctrl+Alt+F12` is used by another app, you can change the hotkey by editing `main.go` and recompiling.
+If `Ctrl+Alt+F12` is used by another app, change it in `main.go` and recompile.

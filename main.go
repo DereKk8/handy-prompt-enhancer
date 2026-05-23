@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -14,18 +13,18 @@ import (
 )
 
 func main() {
-	setup := flag.Bool("setup", false, "Re-run configuration setup")
+	setup := flag.Bool("setup", false, "Re-run configuration wizard")
 	flag.Parse()
 	if *setup {
-		mainthread.Init(runSetup)
+		mainthread.Init(runWizardMain)
 		return
 	}
 	mainthread.Init(run)
 }
 
-func runSetup() {
+func runWizardMain() {
 	cfg := &Config{Model: "gemini-flash-latest"}
-	showConfigSetup(cfg)
+	runWizard(cfg)
 }
 
 func run() {
@@ -33,7 +32,7 @@ func run() {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) || errors.Is(err, ErrNoAPIKey) {
 			cfg = &Config{Model: "gemini-flash-latest"}
-			showConfigSetup(cfg)
+			runWizard(cfg)
 			return
 		}
 		log.Fatalf("Config error: %v", err)
@@ -94,31 +93,4 @@ func handleEnhance(provider LLMProvider, notifier Notifier) {
 
 	log.Println("Prompt enhanced and copied to clipboard")
 	notifier.Notify("Prompt Enhancer", "Prompt enhanced and copied to clipboard")
-}
-
-func showConfigSetup(cfg *Config) {
-	fmt.Println("=== Prompt Enhancer Setup ===")
-	fmt.Println()
-	fmt.Println("Config file not found or incomplete.")
-	fmt.Println("Create %APPDATA%\\prompt-enhancer\\config.toml with:")
-	fmt.Println()
-	fmt.Println(`  api_key = "your-gemini-api-key"`)
-	fmt.Println(`  model = "gemini-flash-latest"`)
-	fmt.Println()
-	fmt.Println("Get a Gemini API key at: https://aistudio.google.com/app/apikey")
-	fmt.Println()
-	fmt.Print("Enter your Gemini API key: ")
-
-	var key string
-	fmt.Scanln(&key)
-	if key == "" {
-		log.Fatal("API key required")
-	}
-	cfg.APIKey = key
-	cfg.Model = "gemini-flash-latest"
-
-	if err := WriteConfig(cfg); err != nil {
-		log.Fatalf("Failed to save config: %v", err)
-	}
-	fmt.Println("Config saved. Restart prompt-enhancer.")
 }
