@@ -6,7 +6,7 @@ Takes raw speech-to-text (from [Handy](https://github.com/cjpais/Handy) or any s
 
 1. Press your Handy shortcut, speak, Handy pastes raw text
 2. Select the raw text and press `Ctrl+C`
-3. Press `Ctrl+Alt+P`
+3. Press `Ctrl+Alt+F12`
 4. App reads clipboard → Gemini rewrites → structured prompt copied back
 5. Paste into Cursor / Claude Code / Codex / Copilot
 
@@ -41,7 +41,7 @@ model = "gemini-2.0-flash"
 prompt-enhancer.exe
 ```
 
-The app runs in the foreground. Press `Ctrl+Alt+P` to enhance clipboard contents. Press `Ctrl+C` to quit.
+The app runs in the foreground. Press `Ctrl+Alt+F12` to enhance clipboard contents. Press `Ctrl+C` to quit.
 
 ## Files
 
@@ -68,4 +68,4 @@ The app uses PowerShell to show toasts. If they don't appear, the app still logs
 Make sure the target text is already copied before pressing `Ctrl+Alt+P`. The app reads whatever is currently on the clipboard.
 
 ### Hotkey conflicts
-If `Ctrl+Alt+P` is used by another app, you can change the hotkey by editing `main.go` and recompiling.
+If `Ctrl+Alt+F12` is used by another app, you can change the hotkey by editing `main.go` and recompiling.

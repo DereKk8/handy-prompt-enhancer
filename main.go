@@ -27,11 +27,11 @@ func run() {
 		log.Fatalf("Config error: %v", err)
 	}
 
-	hk := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModAlt}, hotkey.KeyP)
+	hk := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModAlt}, hotkey.KeyF12)
 	if err := hk.Register(); err != nil {
 		log.Fatalf("Failed to register hotkey: %v", err)
 	}
-	log.Println("prompt-enhancer running — press Ctrl+Alt+P to enhance clipboard")
+	log.Println("prompt-enhancer running — press Ctrl+Alt+F12 to enhance clipboard")
 	log.Println("Press Ctrl+C to quit")
 
 	notifier := &ToastNotifier{}
